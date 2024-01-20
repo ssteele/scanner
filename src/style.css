@@ -1,11 +1,27 @@
 #video-container {
   display: grid;
-  min-height: 100vh;
+  min-height: 50vh;
   width: 100%;
 }
 
 #video {
   background: #ccc;
   place-self: center;
-  width: 50%;
+  width: 70%;
+}
+
+@media screen and (orientation: landscape) {
+  html {
+    transform: rotate(-90deg);
+    transform-origin: left top;
+    width: 100vh;
+    overflow-x: hidden;
+    position: absolute;
+    top: 100%;
+    left: 0;
+  }
+
+  #video-container {
+    height: 100vh;
+  }
 }
