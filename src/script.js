@@ -12,8 +12,6 @@ const detectFrame = (video, model) => {
 };
 
 const getMedia = async (constraints) => {
-  // let stream = null;
-
   try {
     if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
       const webCamPromise = navigator.mediaDevices
@@ -37,7 +35,7 @@ const getMedia = async (constraints) => {
           console.error(error);
         });
       }
-  } catch (error) {
+  } catch(error) {
     console.error(error);
   }
 }
@@ -49,5 +47,5 @@ navigator.permissions.query({ name: 'camera' })
     });
   })
   .catch((error) => {
-    console.log('SHS error:', error); // @debug
+    console.error(error);
   });
