@@ -1,0 +1,16 @@
+{
+  "name": "scanner",
+  "version": "1.0.0",
+  "description": "Scan for price",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "scan",
+    "price",
+    "object detection"
+  ],
+  "author": "Steve Steele",
+  "license": "ISC"
+}
