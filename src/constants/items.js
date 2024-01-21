@@ -1,4 +1,9 @@
-export const GROCERIES = [
+export const ITEMS = [
+    {
+        id: 'person',
+        name: 'Person',
+        price: 'priceless',
+    },
     {
         id: 'egg',
         name: 'Egg',
