@@ -1,15 +1,16 @@
 #video-container {
   display: grid;
-  min-height: 50vh;
+  height: 50vh;
   width: 100%;
 }
 
 #video {
   background: #ccc;
+  max-height: 40vh;
   place-self: center;
-  width: 70%;
 }
 
+/*
 @media screen and (orientation: landscape) {
   html {
     transform: rotate(-90deg);
@@ -25,3 +26,4 @@
     height: 100vh;
   }
 }
+*/
