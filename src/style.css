@@ -1,3 +1,8 @@
+body {
+  color: #555;
+  font-family: "Tahoma";
+}
+
 #video-container {
   display: grid;
   height: 50vh;
@@ -7,6 +12,16 @@
 #video {
   background: #ccc;
   max-height: 40vh;
+  place-self: center;
+}
+
+#prediction-container {
+  display: grid;
+  width: 100%;
+}
+
+#prediction {
+  font-size: 3.5rem;
   place-self: center;
 }
 
