@@ -5,8 +5,11 @@ const videoEl = document.getElementById('video');
 const objectEl = document.getElementById('object');
 
 const renderPredictions = (predictions) => {
-  console.log('SHS predictions:', predictions); // @debug
-  const object = predictions[0]?.class;
+  const object = predictions?.reduce((a, v) => {
+    if (!a) return v;
+    return (v?.score > a?.score) ? v : a;
+  }, null)?.class;
+
   if (!!object) {
     const item = ITEMS.find((item) => object === item?.id);
     const name = item?.name || '?';
