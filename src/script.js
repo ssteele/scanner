@@ -1,44 +1,55 @@
-const video = document.getElementById('video');
+import { ITEMS } from './constants/items.js';
 
-const detectFrame = (video, model) => {
-  model.detect(video)
+// register dom elements
+const videoEl = document.getElementById('video');
+const objectEl = document.getElementById('object');
+
+const renderPredictions = (predictions) => {
+  console.log('SHS predictions:', predictions); // @debug
+  const object = predictions[0]?.class;
+  if (!!object) {
+    const item = ITEMS.find((item) => object === item?.id);
+    const name = item?.name || '?';
+    const price = item?.price || '?';
+    const denomination = (typeof price === 'number') ? '$' : '';
+    objectEl.innerHTML = `${name}: ${denomination}${price}`;
+  }
+};
+
+const detectFrame = (videoEl, model) => {
+  model.detect(videoEl)
     .then(predictions => {
-      console.log('SHS predictions:', predictions); // @debug
-      this.renderPredictions(predictions);
-      // requestAnimationFrame(() => {
-      //   detectFrame(video, model);
-      // });
+      renderPredictions(predictions);
+      requestAnimationFrame(() => {
+        detectFrame(videoEl, model);
+      });
     });
 };
 
 const getMedia = async (constraints) => {
-  try {
-    if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-      const webCamPromise = navigator.mediaDevices
-        .getUserMedia(constraints)
-        .then(stream => {
-          video.srcObject = stream;
-          return new Promise((resolve) => {
-            video.onloadedmetadata = () => {
-              resolve();
-            };
-          });
+  if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+    const webCamPromise = navigator.mediaDevices
+      .getUserMedia(constraints)
+      .then(stream => {
+        videoEl.srcObject = stream;
+        return new Promise((resolve) => {
+          videoEl.onloadedmetadata = () => {
+            resolve();
+          };
         });
+      });
 
-      const modelPromise = cocoSsd.load();
+    const modelPromise = cocoSsd.load();
 
-      Promise.all([modelPromise, webCamPromise])
-        .then((values) => {
-          detectFrame(video, values[0]);
-        })
-        .catch((error) => {
-          console.error(error);
-        });
-      }
-  } catch(error) {
-    console.error(error);
-  }
-}
+    Promise.all([modelPromise, webCamPromise])
+      .then((values) => {
+        detectFrame(videoEl, values[0]);
+      })
+      .catch((error) => {
+        console.error(error);
+      });
+    };
+};
 
 navigator.permissions.query({ name: 'camera' })
   .then(() => {
