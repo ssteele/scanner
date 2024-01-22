@@ -5,6 +5,11 @@ export const ITEMS = [
         price: 'priceless',
     },
     {
+        id: 'cell phone',
+        name: 'Cell phone',
+        price: 'expensive',
+    },
+    {
         id: 'egg',
         name: 'Egg',
         price: 0.52,
