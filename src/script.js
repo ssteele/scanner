@@ -12,7 +12,7 @@ const renderPredictions = (predictions) => {
 
   if (!!object) {
     const item = ITEMS.find((item) => object === item?.id);
-    const name = item?.name || '?';
+    const name = item?.name || `${object.charAt(0).toUpperCase()}${object.slice(1)}`;
     const price = item?.price || '?';
     const denomination = (typeof price === 'number') ? '$' : '';
     objectEl.innerHTML = `${name}: ${denomination}${price}`;
