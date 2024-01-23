@@ -25,6 +25,10 @@ body {
   place-self: center;
 }
 
+.item-not-found {
+  color: #f00;
+}
+
 /*
 @media screen and (orientation: landscape) {
   html {

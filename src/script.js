@@ -11,11 +11,17 @@ const renderPredictions = (predictions) => {
   }, null)?.class;
 
   if (!!object) {
+    let name = `${object.charAt(0).toUpperCase()}${object.slice(1)}`;
+    let price = null;
     const item = ITEMS.find((item) => object === item?.id);
-    const name = item?.name || `${object.charAt(0).toUpperCase()}${object.slice(1)}`;
-    const price = item?.price || '?';
-    const denomination = (typeof price === 'number') ? '$' : '';
-    objectEl.innerHTML = `${name}: ${denomination}${price}`;
+    if (!!item) {
+      name = item?.name;
+      price = item?.price;
+      objectEl.innerHTML = `${name}: $${price}`;
+    } else {
+      objectEl.innerHTML = name;
+      objectEl.className = 'item-not-found';
+    }
   }
 };
 
