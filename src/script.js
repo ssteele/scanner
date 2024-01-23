@@ -4,6 +4,7 @@ import { ITEMS } from './constants/items.js';
 const videoEl = document.getElementById('video');
 const objectEl = document.getElementById('object');
 const rescanButtonEl = document.getElementById('rescan-button');
+const errorEl = document.getElementById('error');
 
 let model = null;
 
@@ -12,6 +13,7 @@ const renderPredictions = (predictions) => {
     if (!a) return v;
     return (v?.score > a?.score) ? v : a;
   }, null)?.class;
+  console.log('object:', object);
 
   if (!!object) {
     let name = `${object.charAt(0).toUpperCase()}${object.slice(1)}`;
@@ -48,6 +50,7 @@ const getMedia = async (constraints) => {
     const webCamPromise = navigator.mediaDevices
       .getUserMedia(constraints)
       .then(stream => {
+        errorEl.className = 'hide';
         videoEl.srcObject = stream;
         return new Promise((resolve) => {
           videoEl.onloadedmetadata = () => {

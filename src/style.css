@@ -29,7 +29,7 @@ button {
 }
 
 .hide {
-  display: none;
+  display: none !important;
 }
 
 .item-not-found {
@@ -46,13 +46,21 @@ button {
 }
 
 #video {
-  background: #ccc;
   max-height: 40vh;
   place-self: center;
 }
 
 #prediction {
   font-size: 3.5rem;
+  place-self: center;
+}
+
+#error {
+  display: grid;
+  height: 50vh;
+}
+
+#error span {
   place-self: center;
 }
 
