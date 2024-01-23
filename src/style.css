@@ -56,12 +56,12 @@ button {
 }
 
 #error {
-  display: grid;
-  height: 25vh;
-}
-
-#error span {
-  place-self: center;
+  bottom: 49%;
+  color: #ccc;
+  font-size: 2rem;
+  position: absolute;
+  text-align: center;
+  width: 100%;
 }
 
 /*
