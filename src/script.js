@@ -27,6 +27,9 @@ const renderPredictions = (predictions) => {
       objectEl.innerHTML = name;
       objectEl.className = 'item-not-found';
     }
+  } else {
+    objectEl.innerHTML = '?';
+    objectEl.className = 'item-not-found';
   }
 };
 
@@ -35,6 +38,7 @@ const detectFrame = (videoEl, model) => {
     .then(predictions => {
       renderPredictions(predictions);
       rescanButtonEl.className = 'show';
+      // rescan();                                                     // continuous scan
     });
 };
 
