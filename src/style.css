@@ -1,12 +1,48 @@
 body {
   color: #555;
   font-family: "Tahoma";
+  font-size: 16px;
+}
+
+button {
+  background-color: #0070f3;
+  border: none;
+  border-radius: 7px;
+  box-shadow: 0 4px 14px 0 rgb(0 118 255 / 39%);
+  color: white;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 1rem;
+  line-height: 45px;
+  padding: 0 56px;
+  place-self: center;
+  transition: background 0.2s ease,color 0.2s ease,box-shadow 0.2s ease;
+  :hover {
+    background: rgba(0,118,255,0.9);
+    box-shadow: 0 6px 20px rgb(0 118 255 / 23%);
+  }
+}
+
+.grid {
+  display: grid;
+  width: 100%;
+}
+
+.hide {
+  display: none;
+}
+
+.item-not-found {
+  color: #f00;
+}
+
+.footer {
+  bottom: 3.5rem;
+  position: fixed;
 }
 
 #video-container {
-  display: grid;
   height: 50vh;
-  width: 100%;
 }
 
 #video {
@@ -15,18 +51,9 @@ body {
   place-self: center;
 }
 
-#prediction-container {
-  display: grid;
-  width: 100%;
-}
-
 #prediction {
   font-size: 3.5rem;
   place-self: center;
-}
-
-.item-not-found {
-  color: #f00;
 }
 
 /*

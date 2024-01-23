@@ -10,13 +10,17 @@
 <body>
 
 <main>
-  <section id="video-container">
+  <section id="video-container" class="grid">
     <video autoplay muted id="video"></video>
   </section>
 
-  <section id="prediction-container">
+  <section class="grid">
     <section id="prediction">
       <span id="object"></span>
+    </section>
+
+    <section class="grid footer">
+      <button id="rescan-button" class="hide">Rescan</button>
     </section>
   </section>
 </main>

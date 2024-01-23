@@ -3,6 +3,9 @@ import { ITEMS } from './constants/items.js';
 // register dom elements
 const videoEl = document.getElementById('video');
 const objectEl = document.getElementById('object');
+const rescanButtonEl = document.getElementById('rescan-button');
+
+let model = null;
 
 const renderPredictions = (predictions) => {
   const object = predictions?.reduce((a, v) => {
@@ -29,11 +32,16 @@ const detectFrame = (videoEl, model) => {
   model.detect(videoEl)
     .then(predictions => {
       renderPredictions(predictions);
-      requestAnimationFrame(() => {
-        detectFrame(videoEl, model);
-      });
+      rescanButtonEl.className = 'show';
     });
 };
+
+const rescan = () => {
+  rescanButtonEl.className = 'hide';
+  requestAnimationFrame(() => {
+    detectFrame(videoEl, model);
+  });
+}
 
 const getMedia = async (constraints) => {
   if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
@@ -52,7 +60,8 @@ const getMedia = async (constraints) => {
 
     Promise.all([modelPromise, webCamPromise])
       .then((values) => {
-        detectFrame(videoEl, values[0]);
+        model = values[0];
+        detectFrame(videoEl, model);
       })
       .catch((error) => {
         console.error(error);
@@ -69,3 +78,6 @@ navigator.permissions.query({ name: 'camera' })
   .catch((error) => {
     console.error(error);
   });
+
+// register element events
+rescanButtonEl.addEventListener ('click', rescan);
