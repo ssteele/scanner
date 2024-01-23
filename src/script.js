@@ -7,6 +7,7 @@ const objectEl = document.getElementById('object');
 const rescanButtonEl = document.getElementById('rescan-button');
 const errorEl = document.getElementById('error');
 
+const isContinuousScan = false;
 let model = null;
 
 const renderPredictions = (predictions) => {
@@ -37,10 +38,13 @@ const renderPredictions = (predictions) => {
 const detectFrame = (videoEl, model) => {
   model.detect(videoEl)
     .then(predictions => {
-      beep();
       renderPredictions(predictions);
       rescanButtonEl.className = 'show';
-      // rescan();                                                     // continuous scan
+      if (isContinuousScan) {
+        rescan();
+      } else {
+        beep();
+      }
     });
 };
 
