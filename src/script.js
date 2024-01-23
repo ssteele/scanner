@@ -1,4 +1,5 @@
 import { ITEMS } from './constants/items.js';
+import { beep } from './beep.js';
 
 // register dom elements
 const videoEl = document.getElementById('video');
@@ -36,6 +37,7 @@ const renderPredictions = (predictions) => {
 const detectFrame = (videoEl, model) => {
   model.detect(videoEl)
     .then(predictions => {
+      beep();
       renderPredictions(predictions);
       rescanButtonEl.className = 'show';
       // rescan();                                                     // continuous scan
