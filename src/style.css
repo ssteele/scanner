@@ -57,7 +57,7 @@ button {
 
 #error {
   display: grid;
-  height: 50vh;
+  height: 25vh;
 }
 
 #error span {
