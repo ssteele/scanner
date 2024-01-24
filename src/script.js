@@ -5,7 +5,7 @@ import { beep } from './beep.js';
 const videoEl = document.getElementById('video');
 const objectEl = document.getElementById('object');
 const rescanButtonEl = document.getElementById('rescan-button');
-const errorEl = document.getElementById('error');
+const noFeedErrorEl = document.getElementById('no-feed-error');
 
 const isContinuousScan = false;
 let model = null;
@@ -60,7 +60,7 @@ const getMedia = async (constraints) => {
     const webCamPromise = navigator.mediaDevices
       .getUserMedia(constraints)
       .then(stream => {
-        errorEl.className = 'hide';
+        noFeedErrorEl.className = 'hide';
         videoEl.srcObject = stream;
         return new Promise((resolve) => {
           videoEl.onloadedmetadata = () => {

@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta http-equiv="ScreenOrientation" content="autoRotate:disabled">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Scanner</title>
   <link rel="shortcut icon" href="./favicon.svg" />
   <link rel="stylesheet" href="./style.css">
@@ -10,7 +11,7 @@
 <body>
 
 <main>
-  <section id="error">
+  <section id="no-feed-error">
     <span>No Feed</span>
   </section>
 
@@ -22,12 +23,12 @@
     <section id="prediction">
       <span id="object"></span>
     </section>
-
-    <section class="grid footer">
-      <button id="rescan-button" class="hide">Rescan</button>
-    </section>
   </section>
 </main>
+
+<footer class="grid">
+  <button id="rescan-button" class="hide">Rescan</button>
+</footer>
 
 </body>
 </html>
