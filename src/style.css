@@ -3,17 +3,12 @@ body {
   color: #aaa;
   font-family: "Tahoma";
   font-size: 16px;
+  margin: 0;
 }
 
 main {
   margin: auto;
-  max-width: 800px;
   position: relative;
-}
-
-footer {
-  bottom: 3.5rem;
-  position: fixed;
 }
 
 button {
@@ -35,11 +30,6 @@ button {
   }
 }
 
-.grid {
-  display: grid;
-  width: 100%;
-}
-
 .hide {
   display: none !important;
 }
@@ -48,21 +38,12 @@ button {
   color: #f00;
 }
 
-#video-container {
-  /* pass */
+.attribute {
+  margin: 0.25rem;
+  text-align: center;
 }
 
-#video {
-  max-height: 50vh;
-  object-fit: cover;
-  width: 100%;
-}
-
-#prediction {
-  font-size: 2rem;
-  margin-top: 2rem;
-  place-self: center;
-}
+/* dom selectors */
 
 #no-feed-error {
   bottom: 49%;
@@ -72,3 +53,57 @@ button {
   text-align: center;
   width: 100%;
 }
+
+#video {
+  max-height: 100%;
+  object-fit: cover;
+  width: 100%;
+}
+
+#price {
+  color: #0f0;
+}
+
+/* start of grid section */
+
+.feed {
+  max-height: 100vh;
+  grid-area: feed;
+}
+
+.prediction {
+  font-size: 2rem;
+  grid-area: prediction;
+  margin-top: 2rem;
+  place-self: start center;
+}
+
+.rescan {
+  grid-area: rescan;
+  margin-bottom: 2rem;
+  place-self: center;
+}
+
+main {
+  display: grid;
+  grid-template-columns: 1fr;
+  grid-template-rows: 1fr 1fr 1fr;
+  grid-template-areas:
+  'feed'
+  'prediction'
+  'rescan';
+  gap: 2rem;
+}
+
+@media only screen and (-webkit-min-device-pixel-ratio: 1.77) and (orientation:landscape) {
+  main {
+    grid-template-columns: 3fr 1fr;
+    grid-template-rows: 3fr 1fr;
+    grid-template-areas:
+    'feed prediction'
+    'feed rescan';
+    gap: 0;
+  }
+}
+
+/* end of grid section */

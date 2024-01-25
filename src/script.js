@@ -3,7 +3,8 @@ import { beep } from './beep.js';
 
 // register dom elements
 const videoEl = document.getElementById('video');
-const objectEl = document.getElementById('object');
+const itemEl = document.getElementById('item');
+const priceEl = document.getElementById('price');
 const rescanButtonEl = document.getElementById('rescan-button');
 const noFeedErrorEl = document.getElementById('no-feed-error');
 
@@ -18,20 +19,21 @@ const renderPredictions = (predictions) => {
   console.log('object:', object);
 
   if (!!object) {
-    let name = `${object.charAt(0).toUpperCase()}${object.slice(1)}`;
-    let price = null;
+    const name = `${object.charAt(0).toUpperCase()}${object.slice(1)}`;
     const item = ITEMS.find((item) => object === item?.id);
     if (!!item) {
-      name = item?.name;
-      price = item?.price;
-      objectEl.innerHTML = `${name}: $${price}`;
+      itemEl.innerHTML = item?.name
+      itemEl.className = '';
+      priceEl.innerHTML = `$${item?.price}`;
     } else {
-      objectEl.innerHTML = name;
-      objectEl.className = 'item-not-found';
+      itemEl.innerHTML = name;
+      itemEl.className = 'item-not-found';
+      priceEl.innerHTML = '';
     }
   } else {
-    objectEl.innerHTML = '?';
-    objectEl.className = 'item-not-found';
+    itemEl.innerHTML = '?';
+    itemEl.className = 'item-not-found';
+    priceEl.innerHTML = '';
   }
 };
 
