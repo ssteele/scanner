@@ -1,5 +1,6 @@
 body {
-  color: #555;
+  background: #111;
+  color: #aaa;
   font-family: "Tahoma";
   font-size: 16px;
 }
@@ -65,7 +66,7 @@ button {
 
 #no-feed-error {
   bottom: 49%;
-  color: #ccc;
+  color: #555;
   font-size: 2rem;
   position: absolute;
   text-align: center;
