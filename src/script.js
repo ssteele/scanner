@@ -94,5 +94,5 @@ navigator.permissions.query({ name: 'camera' })
     console.error(error);
   });
 
-// register element events
+// register events
 rescanButtonEl.addEventListener ('click', rescan);
