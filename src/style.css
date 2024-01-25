@@ -71,21 +71,3 @@ button {
   text-align: center;
   width: 100%;
 }
-
-/*
-@media screen and (orientation: landscape) {
-  html {
-    transform: rotate(-90deg);
-    transform-origin: left top;
-    width: 100vh;
-    overflow-x: hidden;
-    position: absolute;
-    top: 100%;
-    left: 0;
-  }
-
-  #video-container {
-    height: 100vh;
-  }
-}
-*/
