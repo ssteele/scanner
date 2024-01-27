@@ -8,7 +8,7 @@ const priceEl = document.getElementById('price');
 const rescanButtonEl = document.getElementById('rescan-button');
 const noFeedErrorEl = document.getElementById('no-feed-error');
 
-const isContinuousScan = false;
+const isContinuousScan = true;
 const maxScanAttempts = 100;
 let scanIteration = 0;
 let model = null;
