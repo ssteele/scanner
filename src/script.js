@@ -16,7 +16,7 @@ const doCollectUnknown = urlParams.get('collect') ?? false;
 const unknownItems = new Set([]);
 
 let isContinuousScan = urlParams.get('continuous') ?? doCollectUnknown;
-let isReport = false;
+let isDetecting = true;
 let scanIteration = 0;
 let model = null;
 
@@ -43,9 +43,7 @@ const isAnItem = (item) => {
 }
 
 const getItem = (prediction) => {
-  if (!isDetected(prediction)) {
-    return null;
-  }
+  if (!isDetected(prediction)) return null;
 
   const predictionId = camelCase(prediction);
   let item = ITEMS.find((item) => predictionId === item?.id);
@@ -78,11 +76,7 @@ const renderItem = (item) => {
   }
 };
 
-const handleItem = (item) => {
-  if (isReport) {
-    return;
-  }
-
+const renderItemAndReset = (item) => {
   scanIteration = 0;
   renderItem(item);
   rescanButtonEl.className = 'show';
@@ -90,6 +84,8 @@ const handleItem = (item) => {
 }
 
 const detectFrame = (videoEl, model) => {
+  if (!isDetecting) return;
+
   model.detect(videoEl)
     .then(predictions => {
       const prediction = extractPrediction(predictions);
@@ -100,13 +96,13 @@ const detectFrame = (videoEl, model) => {
 
       if (!isContinuousScan) {
         if (isPrediction) {
-          handleItem(item);
+          renderItemAndReset(item);
         } else {
           scanIteration++;
           if (scanIteration < maxScanAttempts) {
             rescan();
           } else {
-            handleItem(null);
+            renderItemAndReset(null);
           }
         }
       } else {
@@ -121,6 +117,7 @@ const detectFrame = (videoEl, model) => {
 };
 
 const rescan = () => {
+  isDetecting = true;
   rescanButtonEl.className = 'hide';
   requestAnimationFrame(() => {
     detectFrame(videoEl, model);
@@ -128,12 +125,12 @@ const rescan = () => {
 }
 
 const report = () => {
-  isContinuousScan = false;
-  isReport = true;
+  isDetecting = false;
   reportButtonEl.className = 'hide';
   const itemsReport = Array.from(unknownItems);
   itemEl.innerHTML = itemsReport.join(', ');
   itemEl.className = 'small';
+  rescanButtonEl.className = 'show';
 }
 
 const getMedia = async (constraints) => {
