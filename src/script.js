@@ -9,6 +9,8 @@ const rescanButtonEl = document.getElementById('rescan-button');
 const noFeedErrorEl = document.getElementById('no-feed-error');
 
 const isContinuousScan = false;
+const maxScanAttempts = 100;
+let scanIteration = 0;
 let model = null;
 
 const extractPrediction = (predictions) => {
@@ -38,6 +40,13 @@ const renderPrediction = (prediction) => {
   }
 };
 
+const handlePrediction = (prediction) => {
+  scanIteration = 0;
+  renderPrediction(prediction);
+  rescanButtonEl.className = 'show';
+  beep();
+}
+
 const detectFrame = (videoEl, model) => {
   model.detect(videoEl)
     .then(predictions => {
@@ -47,11 +56,14 @@ const detectFrame = (videoEl, model) => {
         rescan();
       } else {
         if (!!prediction) {
-          renderPrediction(prediction);
-          rescanButtonEl.className = 'show';
-          beep();
+          handlePrediction(prediction);
         } else {
-          rescan();
+          scanIteration++;
+          if (scanIteration < maxScanAttempts) {
+            rescan();
+          } else {
+            handlePrediction(null);
+          }
         }
       }
     });
