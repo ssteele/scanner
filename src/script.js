@@ -76,9 +76,9 @@ const renderItem = (item) => {
   }
 };
 
-const renderItemAndReset = (item) => {
-  scanIteration = 0;
+const dispatchDetection = (item) => {
   renderItem(item);
+  scanIteration = 0;
   rescanButtonEl.className = 'show';
   beep();
 }
@@ -96,13 +96,13 @@ const detectFrame = (videoEl, model) => {
 
       if (!isContinuousScan) {
         if (isPrediction) {
-          renderItemAndReset(item);
+          dispatchDetection(item);
         } else {
           scanIteration++;
           if (scanIteration < maxScanAttempts) {
             rescan();
           } else {
-            renderItemAndReset(null);
+            dispatchDetection(null);
           }
         }
       } else {
