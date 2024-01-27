@@ -11,16 +11,17 @@ const noFeedErrorEl = document.getElementById('no-feed-error');
 const isContinuousScan = false;
 let model = null;
 
-const renderPredictions = (predictions) => {
-  const object = predictions?.reduce((a, v) => {
+const extractPrediction = (predictions) => {
+  return predictions?.reduce((a, v) => {
     if (!a) return v;
     return (v?.score > a?.score) ? v : a;
   }, null)?.class;
-  console.log('object:', object);
+}
 
-  if (!!object) {
-    const name = `${object.charAt(0).toUpperCase()}${object.slice(1)}`;
-    const item = ITEMS.find((item) => object === item?.id);
+const renderPrediction = (prediction) => {
+  if (!!prediction) {
+    const name = `${prediction.charAt(0).toUpperCase()}${prediction.slice(1)}`;
+    const item = ITEMS.find((item) => prediction === item?.id);
     if (!!item) {
       itemEl.innerHTML = item?.name
       itemEl.className = '';
@@ -40,12 +41,18 @@ const renderPredictions = (predictions) => {
 const detectFrame = (videoEl, model) => {
   model.detect(videoEl)
     .then(predictions => {
-      renderPredictions(predictions);
-      rescanButtonEl.className = 'show';
+      const prediction = extractPrediction(predictions);
       if (isContinuousScan) {
+        renderPrediction(prediction);
         rescan();
       } else {
-        beep();
+        if (!!prediction) {
+          renderPrediction(prediction);
+          rescanButtonEl.className = 'show';
+          beep();
+        } else {
+          rescan();
+        }
       }
     });
 };
