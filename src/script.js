@@ -62,9 +62,15 @@ const getItem = (prediction) => {
 const renderItem = (item) => {
   if (!!item) {
     itemEl.innerHTML = item?.name
+
+    let price = '';
+    if (item?.price) {
+      price = `$${item?.price}`;
+    }
+
     if (isAnItem(item)) {
       itemEl.className = '';
-      priceEl.innerHTML = `$${item?.price}`;
+      priceEl.innerHTML = price;
     } else {
       itemEl.className = 'item-not-found';
       priceEl.innerHTML = '';
