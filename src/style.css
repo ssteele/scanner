@@ -75,20 +75,20 @@ button {
 .prediction {
   font-size: 2rem;
   grid-area: prediction;
-  /* margin-top: 2rem; */
+  margin-top: 2rem;
   place-self: start center;
 }
 
 .rescan {
   grid-area: rescan;
-  /* margin-bottom: 2rem; */
+  margin-bottom: 2rem;
   place-self: end center;
 }
 
 main {
   display: grid;
   grid-template-columns: 1fr;
-  grid-template-rows: 2fr 2fr 1fr;
+  grid-template-rows: 3fr 1fr 1fr;
   grid-template-areas:
   'feed'
   'prediction'
