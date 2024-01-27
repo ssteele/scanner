@@ -8,8 +8,10 @@ const priceEl = document.getElementById('price');
 const rescanButtonEl = document.getElementById('rescan-button');
 const noFeedErrorEl = document.getElementById('no-feed-error');
 
-const isContinuousScan = true;
-const maxScanAttempts = 100;
+const urlParams = new URLSearchParams(window.location.search);
+const isContinuousScan = urlParams.get('continuous') ?? false;
+const maxScanAttempts = urlParams.get('max') ?? 100;
+
 let scanIteration = 0;
 let model = null;
 
