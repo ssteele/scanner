@@ -6,14 +6,27 @@ const videoEl = document.getElementById('video');
 const itemEl = document.getElementById('item');
 const priceEl = document.getElementById('price');
 const rescanButtonEl = document.getElementById('rescan-button');
+const reportButtonEl = document.getElementById('report-button');
 const noFeedErrorEl = document.getElementById('no-feed-error');
 
+// config
 const urlParams = new URLSearchParams(window.location.search);
-const isContinuousScan = urlParams.get('continuous') ?? false;
 const maxScanAttempts = urlParams.get('max') ?? 100;
+const doCollectUnknown = urlParams.get('collect') ?? false;
+const unknownItems = new Set([]);
 
+let isContinuousScan = urlParams.get('continuous') ?? doCollectUnknown;
+let isReport = false;
 let scanIteration = 0;
 let model = null;
+
+const showCase = (string) => {
+  return `${string.charAt(0).toUpperCase()}${string.slice(1)}`;
+}
+
+const camelCase = (string) => {
+  return string.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase());
+}
 
 const extractPrediction = (predictions) => {
   return predictions?.reduce((a, v) => {
@@ -22,16 +35,40 @@ const extractPrediction = (predictions) => {
   }, null)?.class;
 }
 
-const renderPrediction = (prediction) => {
-  if (!!prediction) {
-    const name = `${prediction.charAt(0).toUpperCase()}${prediction.slice(1)}`;
-    const item = ITEMS.find((item) => prediction === item?.id);
-    if (!!item) {
-      itemEl.innerHTML = item?.name
+const isDetected = (prediction) => {
+  return !!prediction;
+}
+
+const isAnItem = (item) => {
+  return !!item?.id;
+}
+
+const getItem = (prediction) => {
+  if (!isDetected(prediction)) {
+    return null;
+  }
+
+  const id = camelCase(prediction);
+  let item = ITEMS.find((item) => id === item?.id);
+  if (!isAnItem(item)) {
+    item = {
+      id: '',
+      name: showCase(prediction),
+      prediction,
+      price: null,
+    }
+  }
+
+  return item;
+}
+
+const renderItem = (item) => {
+  if (!!item) {
+    itemEl.innerHTML = item?.name
+    if (isAnItem(item)) {
       itemEl.className = '';
       priceEl.innerHTML = `$${item?.price}`;
     } else {
-      itemEl.innerHTML = name;
       itemEl.className = 'item-not-found';
       priceEl.innerHTML = '';
     }
@@ -42,9 +79,13 @@ const renderPrediction = (prediction) => {
   }
 };
 
-const handlePrediction = (prediction) => {
+const handleItem = (item) => {
+  if (isReport) {
+    return;
+  }
+
   scanIteration = 0;
-  renderPrediction(prediction);
+  renderItem(item);
   rescanButtonEl.className = 'show';
   beep();
 }
@@ -53,20 +94,29 @@ const detectFrame = (videoEl, model) => {
   model.detect(videoEl)
     .then(predictions => {
       const prediction = extractPrediction(predictions);
-      if (isContinuousScan) {
-        renderPrediction(prediction);
-        rescan();
-      } else {
-        if (!!prediction) {
-          handlePrediction(prediction);
+      const isPrediction = isDetected(prediction);
+
+      const item = getItem(prediction);
+      const isItem = isAnItem(item);
+
+      if (!isContinuousScan) {
+        if (isPrediction) {
+          handleItem(item);
         } else {
           scanIteration++;
           if (scanIteration < maxScanAttempts) {
             rescan();
           } else {
-            handlePrediction(null);
+            handleItem(null);
           }
         }
+      } else {
+        if (doCollectUnknown && isPrediction && !isItem) {
+          unknownItems.add(item?.prediction);
+          reportButtonEl.className = 'show';
+        }
+        renderItem(item);
+        rescan();
       }
     });
 };
@@ -76,6 +126,15 @@ const rescan = () => {
   requestAnimationFrame(() => {
     detectFrame(videoEl, model);
   });
+}
+
+const report = () => {
+  isContinuousScan = false;
+  isReport = true;
+  reportButtonEl.className = 'hide';
+  const itemsReport = Array.from(unknownItems);
+  itemEl.innerHTML = itemsReport.join(', ');
+  itemEl.className = 'small';
 }
 
 const getMedia = async (constraints) => {
@@ -117,3 +176,4 @@ navigator.permissions.query({ name: 'camera' })
 
 // register events
 rescanButtonEl.addEventListener ('click', rescan);
+reportButtonEl.addEventListener ('click', report);

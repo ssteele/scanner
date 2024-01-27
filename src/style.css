@@ -34,6 +34,10 @@ button {
   display: none !important;
 }
 
+.small {
+  font-size: 1rem;
+}
+
 .item-not-found {
   color: #f00;
 }
@@ -77,8 +81,8 @@ button {
   place-self: start center;
 }
 
-.rescan {
-  grid-area: rescan;
+.action {
+  grid-area: action;
   margin-bottom: 2rem;
   place-self: end center;
 }
@@ -90,7 +94,7 @@ main {
   grid-template-areas:
   'feed'
   'prediction'
-  'rescan';
+  'action';
   height: 100vh;
 }
 
@@ -100,7 +104,7 @@ main {
     grid-template-rows: 3fr 1fr;
     grid-template-areas:
     'feed prediction'
-    'feed rescan';
+    'feed action';
   }
 
   .feed {
