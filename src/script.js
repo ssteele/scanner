@@ -30,9 +30,8 @@ const camelCase = (string) => {
 
 const extractPrediction = (predictions) => {
   return predictions?.reduce((a, v) => {
-    if (!a) return v;
     return (v?.score > a?.score) ? v : a;
-  }, null)?.class;
+  }, { score: 0 })?.class;
 }
 
 const isDetected = (prediction) => {
