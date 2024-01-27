@@ -69,13 +69,11 @@ button {
 .feed {
   grid-area: feed;
   max-height: 100vh;
-  place-self: center;
 }
 
 .prediction {
   font-size: 2rem;
   grid-area: prediction;
-  margin-top: 2rem;
   place-self: start center;
 }
 
@@ -103,6 +101,14 @@ main {
     grid-template-areas:
     'feed prediction'
     'feed rescan';
+  }
+
+  .feed {
+    place-self: center;
+  }
+
+  .prediction {
+    margin-top: 2rem;
   }
 }
 
