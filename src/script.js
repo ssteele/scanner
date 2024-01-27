@@ -47,8 +47,8 @@ const getItem = (prediction) => {
     return null;
   }
 
-  const id = camelCase(prediction);
-  let item = ITEMS.find((item) => id === item?.id);
+  const predictionId = camelCase(prediction);
+  let item = ITEMS.find((item) => predictionId === item?.id);
   if (!isAnItem(item)) {
     item = {
       id: '',
