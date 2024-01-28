@@ -90,6 +90,11 @@ export const ITEMS = [
         price: 950.00,
     },
     {
+        id: 'bowl',
+        name: 'Bowl',
+        price: 2.50,
+    },
+    {
         id: 'cup',
         name: 'Cup',
         price: 2.50,
@@ -167,6 +172,11 @@ export const ITEMS = [
     {
         id: 'cat',
         name: 'Cat',
+        price: null,
+    },
+    {
+        id: 'dog',
+        name: 'Dog',
         price: null,
     },
     {
