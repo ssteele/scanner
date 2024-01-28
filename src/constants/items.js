@@ -1,5 +1,10 @@
 export const ITEMS = [
     {
+        id: 'person',
+        name: 'Person',
+        price: null,
+    },
+    {
         id: 'egg',
         name: 'Egg',
         price: 0.52,
@@ -338,6 +343,11 @@ export const ITEMS = [
         id: 'zebra',
         name: 'Zebra',
         price: 5000.00,
+    },
+    {
+        id: 'bird',
+        name: 'Bird',
+        price: 200.00,
     },
     {
         id: 'pottedPlant',
