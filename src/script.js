@@ -28,6 +28,11 @@ const camelCase = (string) => {
   return string.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase());
 }
 
+let currency = new Intl.NumberFormat('en-US', {
+  style: 'currency',
+  currency: 'USD',
+});
+
 const extractPrediction = (predictions) => {
   return predictions?.reduce((a, v) => {
     return (v?.score > a?.score) ? v : a;
@@ -63,9 +68,9 @@ const renderItem = (item) => {
   if (!!item) {
     itemEl.innerHTML = item?.name
 
-    let price = '';
+    let price = null;
     if (item?.price) {
-      price = `$${item?.price}`;
+      price = currency.format(item?.price)
     }
 
     if (isAnItem(item)) {
