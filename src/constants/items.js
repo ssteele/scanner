@@ -350,6 +350,11 @@ export const ITEMS = [
         price: 200.00,
     },
     {
+        id: 'bear',
+        name: 'Bear',
+        price: 2000.00,
+    },
+    {
         id: 'pottedPlant',
         name: 'Potted plant',
         price: 63.00,
