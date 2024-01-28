@@ -172,12 +172,12 @@ export const ITEMS = [
     {
         id: 'cat',
         name: 'Cat',
-        price: null,
+        price: 250.00,
     },
     {
         id: 'dog',
         name: 'Dog',
-        price: null,
+        price: 400.00,
     },
     {
         id: 'toothbrush',
@@ -207,7 +207,7 @@ export const ITEMS = [
     {
         id: 'elephant',
         name: 'Elephant',
-        price: null,
+        price: 35000.00,
     },
     {
         id: 'handbag',
@@ -272,7 +272,7 @@ export const ITEMS = [
     {
         id: 'sheep',
         name: 'Sheep',
-        price: null,
+        price: 200.00,
     },
     {
         id: 'tennisRacket',
@@ -328,6 +328,21 @@ export const ITEMS = [
         id: 'surfboard',
         name: 'Surfboard',
         price: 750.00,
+    },
+    {
+        id: 'cow',
+        name: 'Cow',
+        price: 3500.00,
+    },
+    {
+        id: 'wineGlass',
+        name: 'Wine glass',
+        price: 12.99,
+    },
+    {
+        id: 'zebra',
+        name: 'Zebra',
+        price: 5000.00,
     },
     {
         id: 'pottedPlant',
