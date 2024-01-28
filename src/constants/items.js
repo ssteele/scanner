@@ -1,10 +1,5 @@
 export const ITEMS = [
     {
-        id: 'person',
-        name: 'Person',
-        price: null,
-    },
-    {
         id: 'egg',
         name: 'Egg',
         price: 0.52,
