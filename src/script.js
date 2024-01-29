@@ -97,34 +97,42 @@ const dispatchDetection = (item) => {
 const detectFrame = (videoEl, model) => {
   if (!isDetecting) return;
 
-  model.detect(videoEl)
-    .then(predictions => {
-      const prediction = extractPrediction(predictions);
-      const isPrediction = isDetected(prediction);
+  (async () => {
+    const worker = await Tesseract.createWorker('eng');
+    // const ret = await worker.recognize('https://tesseract.projectnaptha.com/img/eng_bw.png');
+    const ret = await worker.recognize(videoEl);
+    console.log(ret.data.text);
+    await worker.terminate();
+  })();
 
-      const item = getItem(prediction);
-      const isItem = isAnItem(item);
+  // model.detect(videoEl)
+  //   .then(predictions => {
+  //     const prediction = extractPrediction(predictions);
+  //     const isPrediction = isDetected(prediction);
 
-      if (!isContinuousScan) {
-        if (isPrediction) {
-          dispatchDetection(item);
-        } else {
-          scanIteration++;
-          if (scanIteration < maxScanAttempts) {
-            rescan();
-          } else {
-            dispatchDetection(null);
-          }
-        }
-      } else {
-        if (doCollectUnknown && isPrediction && !isItem) {
-          unknownItems.add(item?.prediction);
-          reportButtonEl.className = 'show';
-        }
-        renderItem(item);
-        rescan();
-      }
-    });
+  //     const item = getItem(prediction);
+  //     const isItem = isAnItem(item);
+
+  //     if (!isContinuousScan) {
+  //       if (isPrediction) {
+  //         dispatchDetection(item);
+  //       } else {
+  //         scanIteration++;
+  //         if (scanIteration < maxScanAttempts) {
+  //           rescan();
+  //         } else {
+  //           dispatchDetection(null);
+  //         }
+  //       }
+  //     } else {
+  //       if (doCollectUnknown && isPrediction && !isItem) {
+  //         unknownItems.add(item?.prediction);
+  //         reportButtonEl.className = 'show';
+  //       }
+  //       renderItem(item);
+  //       rescan();
+  //     }
+  //   });
 };
 
 const rescan = () => {
