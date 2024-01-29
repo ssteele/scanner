@@ -1,5 +1,5 @@
-import { ITEMS } from './constants/items.js';
 import { beep } from './beep.js';
+import { ITEMS } from './constants/items.js';
 
 // register dom elements
 const videoEl = document.getElementById('video');
