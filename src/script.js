@@ -1,13 +1,15 @@
 import { beep } from './beep.js';
 import { ITEMS } from './constants/items.js';
+import { getDomElements } from './dom.js';
 
-// register dom elements
-const videoEl = document.getElementById('video');
-const itemEl = document.getElementById('item');
-const priceEl = document.getElementById('price');
-const rescanButtonEl = document.getElementById('rescan-button');
-const reportButtonEl = document.getElementById('report-button');
-const noFeedErrorEl = document.getElementById('no-feed-error');
+const {
+  itemEl,
+  noFeedErrorEl,
+  priceEl,
+  reportButtonEl,
+  rescanButtonEl,
+  videoEl,
+} = getDomElements();
 
 // config
 const urlParams = new URLSearchParams(window.location.search);
