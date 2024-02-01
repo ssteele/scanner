@@ -79,6 +79,7 @@ button {
   font-size: 2rem;
   grid-area: prediction;
   place-self: start center;
+  text-align: center;
 }
 
 .action {
