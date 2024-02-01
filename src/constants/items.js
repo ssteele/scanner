@@ -15,17 +15,17 @@ export const ITEMS = [
         price: 0.47,
     },
     {
-        id: 'bellPepper',
+        id: 'bell pepper',
         name: 'Bell pepper',
         price: 1.55,
     },
     {
-        id: 'swissCheese',
+        id: 'swiss cheese',
         name: 'Swiss cheese',
         price: 3.10,
     },
     {
-        id: 'blackBerries',
+        id: 'black berries',
         name: 'Black berries',
         price: 4.95,
     },
@@ -65,7 +65,7 @@ export const ITEMS = [
         price: 1.12,
     },
     {
-        id: 'cornOnTheCob',
+        id: 'corn on the cob',
         name: 'Corn on the cob',
         price: 0.57,
     },
@@ -75,7 +75,7 @@ export const ITEMS = [
         price: 3.93,
     },
     {
-        id: 'cellPhone',
+        id: 'cell phone',
         name: 'Cell phone',
         price: 790.00,
     },
@@ -110,7 +110,7 @@ export const ITEMS = [
         price: 9.99,
     },
     {
-        id: 'diningTable',
+        id: 'dining table',
         name: 'Dining table',
         price: 1200.00,
     },
@@ -200,7 +200,7 @@ export const ITEMS = [
         price: 750.00,
     },
     {
-        id: 'teddyBear',
+        id: 'teddy bear',
         name: 'Teddy bear',
         price: 20.00,
     },
@@ -245,12 +245,12 @@ export const ITEMS = [
         price: 22.00,
     },
     {
-        id: 'hotDog',
+        id: 'hot dog',
         name: 'Hot dog',
         price: 5.00,
     },
     {
-        id: 'sportsBall',
+        id: 'sports ball',
         name: 'Ball',
         price: 17.00,
     },
@@ -275,12 +275,12 @@ export const ITEMS = [
         price: 200.00,
     },
     {
-        id: 'tennisRacket',
+        id: 'tennis racket',
         name: 'Tennis racket',
         price: 35.00,
     },
     {
-        id: 'stopSign',
+        id: 'stop sign',
         name: 'Stop sign',
         price: 87.50,
     },
@@ -290,7 +290,7 @@ export const ITEMS = [
         price: 23.00,
     },
     {
-        id: 'parkingMeter',
+        id: 'parking meter',
         name: 'Parking meter',
         price: 3.00,
     },
@@ -300,7 +300,7 @@ export const ITEMS = [
         price: 50.00,
     },
     {
-        id: 'trafficLight',
+        id: 'traffic light',
         name: 'Traffic light',
         price: 500000.00,
     },
@@ -320,7 +320,7 @@ export const ITEMS = [
         price: 7500.00,
     },
     {
-        id: 'baseballGlove',
+        id: 'baseball glove',
         name: 'Baseball glove',
         price: 20.00,
     },
@@ -335,7 +335,7 @@ export const ITEMS = [
         price: 3500.00,
     },
     {
-        id: 'wineGlass',
+        id: 'wine glass',
         name: 'Wine glass',
         price: 12.99,
     },
@@ -355,7 +355,7 @@ export const ITEMS = [
         price: 2000.00,
     },
     {
-        id: 'pottedPlant',
+        id: 'potted plant',
         name: 'Potted plant',
         price: 63.00,
     },
