@@ -19,7 +19,7 @@ const OPTICAL_CHARACTER_RECOGNITION = 'ocr';
 const OBJECT_DETECTION = 'od';
 let detectionAlgorithm = OPTICAL_CHARACTER_RECOGNITION;
 let isContinuousScan = urlParams.get('continuous') ?? doCollectUnknown;
-let isDetecting = true;
+let isScanning = true;
 let scanIteration = 0;
 let model = null;
 
@@ -107,7 +107,7 @@ const dispatchDetection = (item) => {
 }
 
 const detectFrame = (videoEl, model) => {
-  if (!isDetecting) return;
+  if (!isScanning) return;
 
   if (detectionAlgorithm === OPTICAL_CHARACTER_RECOGNITION) {
     const { createWorker, createScheduler } = Tesseract;
@@ -178,7 +178,7 @@ const detectFrame = (videoEl, model) => {
 };
 
 const rescan = () => {
-  isDetecting = true;
+  isScanning = true;
   rescanButtonEl.className = 'hide';
   requestAnimationFrame(() => {
     detectFrame(videoEl, model);
@@ -186,7 +186,7 @@ const rescan = () => {
 }
 
 const report = () => {
-  isDetecting = false;
+  isScanning = false;
   reportButtonEl.className = 'hide';
   const itemsReport = Array.from(unknownItems);
   itemEl.innerHTML = itemsReport.join(', ');
