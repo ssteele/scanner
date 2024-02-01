@@ -15,6 +15,7 @@ const maxScanAttempts = urlParams.get('max') ?? 100;
 const doCollectUnknown = urlParams.get('collect') ?? false;
 const unknownItems = new Set([]);
 
+let detectionAlgorithm = 'words';
 let isContinuousScan = urlParams.get('continuous') ?? doCollectUnknown;
 let isDetecting = true;
 let scanIteration = 0;
@@ -97,42 +98,43 @@ const dispatchDetection = (item) => {
 const detectFrame = (videoEl, model) => {
   if (!isDetecting) return;
 
-  (async () => {
-    const worker = await Tesseract.createWorker('eng');
-    // const ret = await worker.recognize('https://tesseract.projectnaptha.com/img/eng_bw.png');
-    const ret = await worker.recognize(videoEl);
-    console.log(ret.data.text);
-    await worker.terminate();
-  })();
+  if ('words' === detectionAlgorithm) {
+    (async () => {
+      const worker = await Tesseract.createWorker('eng');
+      const ret = await worker.recognize('https://tesseract.projectnaptha.com/img/eng_bw.png');
+      console.log(ret.data.text);
+      await worker.terminate();
+    })();
+  } else if ('objects' === detectionAlgorithm) {
+    model.detect(videoEl)
+      .then(predictions => {
+        const prediction = extractPrediction(predictions);
+        const isPrediction = isDetected(prediction);
 
-  // model.detect(videoEl)
-  //   .then(predictions => {
-  //     const prediction = extractPrediction(predictions);
-  //     const isPrediction = isDetected(prediction);
+        const item = getItem(prediction);
+        const isItem = isAnItem(item);
 
-  //     const item = getItem(prediction);
-  //     const isItem = isAnItem(item);
-
-  //     if (!isContinuousScan) {
-  //       if (isPrediction) {
-  //         dispatchDetection(item);
-  //       } else {
-  //         scanIteration++;
-  //         if (scanIteration < maxScanAttempts) {
-  //           rescan();
-  //         } else {
-  //           dispatchDetection(null);
-  //         }
-  //       }
-  //     } else {
-  //       if (doCollectUnknown && isPrediction && !isItem) {
-  //         unknownItems.add(item?.prediction);
-  //         reportButtonEl.className = 'show';
-  //       }
-  //       renderItem(item);
-  //       rescan();
-  //     }
-  //   });
+        if (!isContinuousScan) {
+          if (isPrediction) {
+            dispatchDetection(item);
+          } else {
+            scanIteration++;
+            if (scanIteration < maxScanAttempts) {
+              rescan();
+            } else {
+              dispatchDetection(null);
+            }
+          }
+        } else {
+          if (doCollectUnknown && isPrediction && !isItem) {
+            unknownItems.add(item?.prediction);
+            reportButtonEl.className = 'show';
+          }
+          renderItem(item);
+          rescan();
+        }
+      });
+  }
 };
 
 const rescan = () => {
