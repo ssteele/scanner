@@ -27,10 +27,6 @@ const showCase = (string) => {
   return `${string.charAt(0).toUpperCase()}${string.slice(1)}`;
 }
 
-const camelCase = (string) => {
-  return string.toLowerCase().replace(/[^a-zA-Z0-9]+(.)/g, (m, chr) => chr.toUpperCase());
-}
-
 let currency = new Intl.NumberFormat('en-US', {
   style: 'currency',
   currency: 'USD',
@@ -50,19 +46,32 @@ const isAnItem = (item) => {
   return !!item?.id;
 }
 
+const notFound = (prediction) => {
+  return {
+    id: '',
+    name: showCase(prediction),
+    prediction,
+    price: null,
+  };
+}
+
 const getItem = (prediction) => {
   if (!isDetected(prediction)) return null;
 
-  const predictionId = camelCase(prediction);
-  let item = ITEMS.find((item) => predictionId === item?.id);
-  if (!isAnItem(item)) {
-    item = {
-      id: '',
-      name: showCase(prediction),
-      prediction,
-      price: null,
-    }
-  }
+  let item = ITEMS.find((item) => prediction.toLowerCase() === item?.id);
+  if (!isAnItem(item)) return notFound(prediction);
+
+  return item;
+}
+
+const getItemFuzzy = (prediction) => {
+  if (!isDetected(prediction)) return null;
+
+  let item = ITEMS.find((item) => {
+    const itemRegex = new RegExp(item?.id);
+    return itemRegex.test(prediction.toLowerCase());
+  });
+  if (!isAnItem(item)) return notFound(prediction);
 
   return item;
 }
@@ -103,25 +112,20 @@ const detectFrame = (videoEl, model) => {
   if (detectionAlgorithm === OPTICAL_CHARACTER_RECOGNITION) {
     const { createWorker, createScheduler } = Tesseract;
     const scheduler = createScheduler();
-    // const video = document.getElementById('poem-video');
-    // const messages = document.getElementById('messages');
     let timerId = null;
-
-    const addMessage = (message) => {
-      console.log('SHS message:', message); // @debug
-    }
 
     const doOCR = async () => {
       const c = document.createElement('canvas');
       c.width = 640;
       c.height = 360;
       c.getContext('2d').drawImage(video, 0, 0, 640, 360);
-      // const start = new Date();
       const { data: { text } } = await scheduler.addJob('recognize', c);
-      // const end = new Date()
-      // addMessage(`[${start.getMinutes()}:${start.getSeconds()} - ${end.getMinutes()}:${end.getSeconds()}], ${(end - start) / 1000} s`);
       text.split('\n').forEach((line) => {
-        addMessage(line);
+        const item = getItemFuzzy(line);
+        const isItem = isAnItem(item);
+        if (isItem) {
+          renderItem(item);
+        }
       });
     };
 
