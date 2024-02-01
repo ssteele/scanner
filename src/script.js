@@ -15,7 +15,9 @@ const maxScanAttempts = urlParams.get('max') ?? 100;
 const doCollectUnknown = urlParams.get('collect') ?? false;
 const unknownItems = new Set([]);
 
-let detectionAlgorithm = 'words';
+const OPTICAL_CHARACTER_RECOGNITION = 'ocr';
+const OBJECT_DETECTION = 'od';
+let detectionAlgorithm = OPTICAL_CHARACTER_RECOGNITION;
 let isContinuousScan = urlParams.get('continuous') ?? doCollectUnknown;
 let isDetecting = true;
 let scanIteration = 0;
@@ -98,14 +100,48 @@ const dispatchDetection = (item) => {
 const detectFrame = (videoEl, model) => {
   if (!isDetecting) return;
 
-  if ('words' === detectionAlgorithm) {
+  if (detectionAlgorithm === OPTICAL_CHARACTER_RECOGNITION) {
+    const { createWorker, createScheduler } = Tesseract;
+    const scheduler = createScheduler();
+    // const video = document.getElementById('poem-video');
+    // const messages = document.getElementById('messages');
+    let timerId = null;
+
+    const addMessage = (message) => {
+      console.log('SHS message:', message); // @debug
+    }
+
+    const doOCR = async () => {
+      const c = document.createElement('canvas');
+      c.width = 640;
+      c.height = 360;
+      c.getContext('2d').drawImage(video, 0, 0, 640, 360);
+      // const start = new Date();
+      const { data: { text } } = await scheduler.addJob('recognize', c);
+      // const end = new Date()
+      // addMessage(`[${start.getMinutes()}:${start.getSeconds()} - ${end.getMinutes()}:${end.getSeconds()}], ${(end - start) / 1000} s`);
+      text.split('\n').forEach((line) => {
+        addMessage(line);
+      });
+    };
+
     (async () => {
-      const worker = await Tesseract.createWorker('eng');
-      const ret = await worker.recognize('https://tesseract.projectnaptha.com/img/eng_bw.png');
-      console.log(ret.data.text);
-      await worker.terminate();
+      for (let i = 0; i < 4; i++) {
+        const worker = createWorker();
+        await worker.load();
+        await worker.loadLanguage('eng');
+        await worker.initialize('eng');
+        scheduler.addWorker(worker);
+      }
+      // video.addEventListener('play', () => {
+        timerId = setInterval(doOCR, 1000);
+      // });
+      // video.addEventListener('pause', () => {
+      //   clearInterval(timerId);
+      // });
+      // video.controls = true;
     })();
-  } else if ('objects' === detectionAlgorithm) {
+  } else if (detectionAlgorithm === OBJECT_DETECTION) {
     model.detect(videoEl)
       .then(predictions => {
         const prediction = extractPrediction(predictions);
