@@ -6,8 +6,8 @@ import {
   getItemFuzzy,
   isAnItem,
   isDetected,
+  renderItem,
 } from './item.js';
-import { currency } from './string.js';
 
 const {
   itemEl,
@@ -35,34 +35,15 @@ let scanIteration = 0;
 let model = null;
 let unknownItems = new Set([]);
 
-const renderItem = (item) => {
-  if (!!item) {
-    itemEl.innerHTML = item?.name
-
-    let price = null;
-    if (item?.price) {
-      price = currency.format(item?.price)
-    }
-
-    if (isAnItem(item)) {
-      itemEl.className = '';
-      priceEl.innerHTML = price;
-    } else {
-      itemEl.className = 'item-not-found';
-      priceEl.innerHTML = '';
-    }
-  } else {
-    itemEl.innerHTML = '?';
-    itemEl.className = 'item-not-found';
-    priceEl.innerHTML = '';
-  }
-};
-
-const dispatchDetection = (item) => {
-  renderItem(item);
-  scanIteration = 0;
+const renderDetection = (item) => {
+  renderItem(item, itemEl, priceEl);
   rescanButtonEl.className = 'show';
   beep();
+};
+
+const renderObjectDetection = (item) => {
+  scanIteration = 0;
+  renderDetection(item);
 };
 
 const runObjectDetection = () => {
@@ -76,13 +57,13 @@ const runObjectDetection = () => {
 
       if (!isContinuousScan) {
         if (isPrediction) {
-          dispatchDetection(item);
+          renderObjectDetection(item);
         } else {
           scanIteration++;
           if (scanIteration < maxScanAttempts) {
             rescan();
           } else {
-            dispatchDetection(null);
+            renderObjectDetection(null);
           }
         }
       } else {
@@ -90,7 +71,7 @@ const runObjectDetection = () => {
           unknownItems.add(item?.prediction);
           reportButtonEl.className = 'show';
         }
-        renderItem(item);
+        renderItem(item, itemEl, priceEl);
         rescan();
       }
     });
@@ -111,7 +92,7 @@ const runCharacterDetection = () => {
       const item = getItemFuzzy(line);
       const isItem = isAnItem(item);
       if (isItem) {
-        renderItem(item);
+        renderDetection(item);
       }
     });
   };
