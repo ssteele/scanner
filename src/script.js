@@ -1,7 +1,13 @@
 import { beep } from './beep.js';
-import { ITEMS } from './constants/items.js';
 import { getDomElements } from './dom.js';
-import { currency, showCase } from './string.js';
+import {
+  extractPrediction,
+  getItem,
+  getItemFuzzy,
+  isAnItem,
+  isDetected,
+} from './item.js';
+import { currency } from './string.js';
 
 const {
   itemEl,
@@ -18,6 +24,7 @@ const OBJECT_DETECTION = 'od';
 
 // config
 let detectionAlgorithm = OPTICAL_CHARACTER_RECOGNITION;
+// let detectionAlgorithm = OBJECT_DETECTION; // @todo: remove me
 const urlParams = new URLSearchParams(window.location.search);
 const maxScanAttempts = urlParams.get('max') ?? 100;
 const doCollectUnknown = urlParams.get('collect') ?? false;
@@ -27,50 +34,6 @@ let isScanning = true;
 let scanIteration = 0;
 let model = null;
 let unknownItems = new Set([]);
-
-const extractPrediction = (predictions) => {
-  return predictions?.reduce((a, v) => {
-    return (v?.score > a?.score) ? v : a;
-  }, { score: 0 })?.class;
-};
-
-const isDetected = (prediction) => {
-  return !!prediction;
-};
-
-const isAnItem = (item) => {
-  return !!item?.id;
-};
-
-const notFound = (prediction) => {
-  return {
-    id: '',
-    name: showCase(prediction),
-    prediction,
-    price: null,
-  };
-};
-
-const getItem = (prediction) => {
-  if (!isDetected(prediction)) return null;
-
-  let item = ITEMS.find((item) => prediction.toLowerCase() === item?.id);
-  if (!isAnItem(item)) return notFound(prediction);
-
-  return item;
-};
-
-const getItemFuzzy = (prediction) => {
-  if (!isDetected(prediction)) return null;
-
-  let item = ITEMS.find((item) => {
-    const itemRegex = new RegExp(item?.id);
-    return itemRegex.test(prediction.toLowerCase());
-  });
-  if (!isAnItem(item)) return notFound(prediction);
-
-  return item;
-};
 
 const renderItem = (item) => {
   if (!!item) {
