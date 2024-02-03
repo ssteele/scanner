@@ -23,8 +23,8 @@ const OPTICAL_CHARACTER_RECOGNITION = 'ocr';
 const OBJECT_DETECTION = 'od';
 
 // config
-let detectionAlgorithm = OPTICAL_CHARACTER_RECOGNITION;
-// let detectionAlgorithm = OBJECT_DETECTION; // @todo: remove me
+let detectionAlgorithms = [OPTICAL_CHARACTER_RECOGNITION];
+// let detectionAlgorithms = [OBJECT_DETECTION]; // @todo: remove me
 const urlParams = new URLSearchParams(window.location.search);
 const maxScanAttempts = urlParams.get('max') ?? 100;
 const doCollectUnknown = urlParams.get('collect') ?? false;
@@ -98,9 +98,9 @@ const runCharacterDetection = async () => {
 const detectFrame = () => {
   if (!isScanning) return;
 
-  if (detectionAlgorithm === OBJECT_DETECTION) {
+  if (detectionAlgorithms.includes(OBJECT_DETECTION)) {
     runObjectDetection();
-  } else if (detectionAlgorithm === OPTICAL_CHARACTER_RECOGNITION) {
+  } else if (detectionAlgorithms.includes(OPTICAL_CHARACTER_RECOGNITION)) {
     runCharacterDetection();
   }
 };
@@ -149,7 +149,8 @@ const getMedia = async (constraints) => {
     };
 };
 
-const initializeCharacterDetection = async () => {
+if (detectionAlgorithms.includes(OPTICAL_CHARACTER_RECOGNITION)) {
+  // initialize character detection
   await (async () => {
     for (let i = 0; i < 4; i++) {
       const worker = createWorker();
@@ -160,7 +161,6 @@ const initializeCharacterDetection = async () => {
     }
   })();
 };
-await initializeCharacterDetection();
 
 navigator.permissions.query({ name: 'camera' })
   .then(() => {
