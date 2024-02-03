@@ -35,6 +35,9 @@ let scanIteration = 0;
 let model = null;
 let unknownItems = new Set([]);
 
+const { createWorker, createScheduler } = Tesseract;
+const scheduler = createScheduler();
+
 const renderDetection = (item) => {
   renderItem(item, itemEl, priceEl);
   rescanButtonEl.className = 'show';
@@ -77,51 +80,28 @@ const runObjectDetection = () => {
     });
 };
 
-const runCharacterDetection = () => {
-  const { createWorker, createScheduler } = Tesseract;
-  const scheduler = createScheduler();
-  let timerId = null;
-
-  const doOCR = async () => {
-    const c = document.createElement('canvas');
-    c.width = 640;
-    c.height = 360;
-    c.getContext('2d').drawImage(video, 0, 0, 640, 360);
-    const { data: { text } } = await scheduler.addJob('recognize', c);
-    text.split('\n').forEach((line) => {
-      const item = getItemFuzzy(line);
-      const isItem = isAnItem(item);
-      if (isItem) {
-        renderDetection(item);
-      }
-    });
-  };
-
-  (async () => {
-    for (let i = 0; i < 4; i++) {
-      const worker = createWorker();
-      await worker.load();
-      await worker.loadLanguage('eng');
-      await worker.initialize('eng');
-      scheduler.addWorker(worker);
-    }
-    // video.addEventListener('play', () => {
-      timerId = setInterval(doOCR, 1000);
-    // });
-    // video.addEventListener('pause', () => {
-    //   clearInterval(timerId);
-    // });
-    // video.controls = true;
-  })();
+const runCharacterDetection = async () => {
+  const c = document.createElement('canvas');
+  c.width = 640;
+  c.height = 360;
+  c.getContext('2d').drawImage(video, 0, 0, 640, 360);
+  const { data: { text } } = await scheduler.addJob('recognize', c);
+  const item = getItemFuzzy(text);
+  const isItem = isAnItem(item);
+  if (isItem) {
+    renderDetection(item);
+  } else {
+    await runCharacterDetection();
+  }
 };
 
 const detectFrame = () => {
   if (!isScanning) return;
 
-  if (detectionAlgorithm === OPTICAL_CHARACTER_RECOGNITION) {
-    runCharacterDetection();
-  } else if (detectionAlgorithm === OBJECT_DETECTION) {
+  if (detectionAlgorithm === OBJECT_DETECTION) {
     runObjectDetection();
+  } else if (detectionAlgorithm === OPTICAL_CHARACTER_RECOGNITION) {
+    runCharacterDetection();
   }
 };
 
@@ -168,6 +148,19 @@ const getMedia = async (constraints) => {
       });
     };
 };
+
+const initializeCharacterDetection = async () => {
+  await (async () => {
+    for (let i = 0; i < 4; i++) {
+      const worker = createWorker();
+      await worker.load();
+      await worker.loadLanguage('eng');
+      await worker.initialize('eng');
+      scheduler.addWorker(worker);
+    }
+  })();
+};
+await initializeCharacterDetection();
 
 navigator.permissions.query({ name: 'camera' })
   .then(() => {
