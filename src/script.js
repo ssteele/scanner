@@ -95,6 +95,16 @@ const runCharacterDetection = async () => {
   }
 };
 
+const loadCharacterDetection = async () => {
+  for (let i = 0; i < 4; i++) {
+    const worker = createWorker();
+    await worker.load();
+    await worker.loadLanguage('eng');
+    await worker.initialize('eng');
+    scheduler.addWorker(worker);
+  }
+};
+
 const detectFrame = () => {
   if (!isScanning) return;
 
@@ -136,7 +146,12 @@ const getMedia = async (constraints) => {
         });
       });
 
-    const modelPromise = cocoSsd.load();
+    let modelPromise;
+    if (detectionAlgorithms.includes(OBJECT_DETECTION)) {
+      modelPromise = cocoSsd.load();
+    } else if (detectionAlgorithms.includes(OPTICAL_CHARACTER_RECOGNITION)) {
+      modelPromise = loadCharacterDetection();
+    }
 
     Promise.all([modelPromise, webCamPromise])
       .then((values) => {
@@ -147,19 +162,6 @@ const getMedia = async (constraints) => {
         console.error(error);
       });
     };
-};
-
-if (detectionAlgorithms.includes(OPTICAL_CHARACTER_RECOGNITION)) {
-  // initialize character detection
-  await (async () => {
-    for (let i = 0; i < 4; i++) {
-      const worker = createWorker();
-      await worker.load();
-      await worker.loadLanguage('eng');
-      await worker.initialize('eng');
-      scheduler.addWorker(worker);
-    }
-  })();
 };
 
 navigator.permissions.query({ name: 'camera' })
