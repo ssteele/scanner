@@ -23,8 +23,9 @@ const OPTICAL_CHARACTER_RECOGNITION = 'ocr';
 const OBJECT_DETECTION = 'od';
 
 // config
-let detectionAlgorithms = [OPTICAL_CHARACTER_RECOGNITION];
+// let detectionAlgorithms = [OPTICAL_CHARACTER_RECOGNITION];
 // let detectionAlgorithms = [OBJECT_DETECTION]; // @todo: remove me
+let detectionAlgorithms = [OBJECT_DETECTION, OPTICAL_CHARACTER_RECOGNITION]; // @todo: remove me
 const urlParams = new URLSearchParams(window.location.search);
 const maxScanAttempts = urlParams.get('max') ?? 100;
 const doCollectUnknown = urlParams.get('collect') ?? false;
@@ -39,6 +40,7 @@ const { createWorker, createScheduler } = Tesseract;
 const scheduler = createScheduler();
 
 const renderDetection = (item) => {
+  isScanning = false;
   renderItem(item, itemEl, priceEl);
   rescanButtonEl.className = 'show';
   beep();
@@ -49,49 +51,56 @@ const renderObjectDetection = (item) => {
   renderDetection(item);
 };
 
-const runObjectDetection = () => {
-  model.detect(videoEl)
-    .then(predictions => {
+const runObjectDetection = async () => {
+  console.log('SHS runObjectDetection'); // @debug
+  const predictions = await model.detect(videoEl);
+    // .then(predictions => {
       const prediction = extractPrediction(predictions);
-      const isPrediction = isDetected(prediction);
+      console.log('SHS prediction:', prediction); // @debug
+      // const isPrediction = isDetected(prediction);
 
       const item = getItem(prediction);
-      const isItem = isAnItem(item);
+      return item;
+      // const isItem = isAnItem(item);
 
-      if (!isContinuousScan) {
-        if (isPrediction) {
-          renderObjectDetection(item);
-        } else {
-          scanIteration++;
-          if (scanIteration < maxScanAttempts) {
-            rescan();
-          } else {
-            renderObjectDetection(null);
-          }
-        }
-      } else {
-        if (doCollectUnknown && isPrediction && !isItem) {
-          unknownItems.add(item?.prediction);
-          reportButtonEl.className = 'show';
-        }
-        renderItem(item, itemEl, priceEl);
-        rescan();
-      }
-    });
+    //   if (!isContinuousScan) {
+    //     if (isPrediction) {
+    //       // renderObjectDetection(item);
+    //       return item;
+    //     // } else {
+    //     //   scanIteration++;
+    //     //   if (scanIteration < maxScanAttempts) {
+    //     //     scan();
+    //     //   } else {
+    //     //     renderObjectDetection(null);
+    //     //   }
+    //     }
+    //   } else {
+    //     if (doCollectUnknown && isPrediction && !isItem) {
+    //       unknownItems.add(item?.prediction);
+    //       reportButtonEl.className = 'show';
+    //     }
+    //     renderItem(item, itemEl, priceEl);
+    //     scan();
+    //   }
+    // });
 };
 
 const runCharacterDetection = async () => {
+  console.log('SHS runCharacterDetection'); // @debug
   const c = document.createElement('canvas');
   c.width = 640;
   c.height = 360;
   c.getContext('2d').drawImage(video, 0, 0, 640, 360);
   const { data: { text } } = await scheduler.addJob('recognize', c);
   const item = getItemFuzzy(text);
+  return item;
   const isItem = isAnItem(item);
   if (isItem) {
-    renderDetection(item);
+    return item;
+    // renderDetection(item);
   } else {
-    await runCharacterDetection();
+    // await runCharacterDetection();
   }
 };
 
@@ -108,19 +117,40 @@ const loadCharacterDetection = async () => {
 const detectFrame = () => {
   if (!isScanning) return;
 
+  let detectionPromises = [];
   if (detectionAlgorithms.includes(OBJECT_DETECTION)) {
-    runObjectDetection();
-  } else if (detectionAlgorithms.includes(OPTICAL_CHARACTER_RECOGNITION)) {
-    runCharacterDetection();
+    detectionPromises.push(runObjectDetection());
   }
+  if (detectionAlgorithms.includes(OPTICAL_CHARACTER_RECOGNITION)) {
+    detectionPromises.push(runCharacterDetection());
+  }
+
+  console.log('SHS detectionPromises:', detectionPromises); // @debug
+  Promise.allSettled([...detectionPromises])
+    .then((values) => {
+      console.log('SHS values:', values); // @debug
+      const items = values.filter(({ value: item }) => isAnItem(item) ? item : false);
+      if (items.length) {
+        renderDetection(items[0].value);
+      } else {
+        detectFrame();
+      }
+    })
+    .catch((error) => {
+      console.error(error);
+    });
 };
 
-const rescan = () => {
-  isScanning = true;
+const scan = () => {
   rescanButtonEl.className = 'hide';
   requestAnimationFrame(() => {
     detectFrame();
   });
+};
+
+const rescan = () => {
+  isScanning = true;
+  scan();
 };
 
 const report = () => {
@@ -146,14 +176,15 @@ const getMedia = async (constraints) => {
         });
       });
 
-    let modelPromise;
+    let modelPromises = [];
     if (detectionAlgorithms.includes(OBJECT_DETECTION)) {
-      modelPromise = cocoSsd.load();
-    } else if (detectionAlgorithms.includes(OPTICAL_CHARACTER_RECOGNITION)) {
-      modelPromise = loadCharacterDetection();
+      modelPromises.push(cocoSsd.load());
+    }
+    if (detectionAlgorithms.includes(OPTICAL_CHARACTER_RECOGNITION)) {
+      modelPromises.push(loadCharacterDetection());
     }
 
-    Promise.all([modelPromise, webCamPromise])
+    Promise.all([...modelPromises, webCamPromise])
       .then((values) => {
         model = values[0];
         detectFrame();
@@ -161,7 +192,7 @@ const getMedia = async (constraints) => {
       .catch((error) => {
         console.error(error);
       });
-    };
+  };
 };
 
 navigator.permissions.query({ name: 'camera' })
