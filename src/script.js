@@ -1,3 +1,5 @@
+const doDebug = true;                                               // @debug
+
 import { beep } from './beep.js';
 import { getDomElements } from './dom.js';
 import {
@@ -52,56 +54,44 @@ const renderObjectDetection = (item) => {
 };
 
 const runObjectDetection = async () => {
-  console.log('SHS runObjectDetection'); // @debug
+  if (false && !!doDebug) { console.log('SHS runObjectDetection'); } // @debug
   const predictions = await model.detect(videoEl);
-    // .then(predictions => {
-      const prediction = extractPrediction(predictions);
-      console.log('SHS prediction:', prediction); // @debug
-      // const isPrediction = isDetected(prediction);
+  const prediction = extractPrediction(predictions);
+  return getItem(prediction);
 
-      const item = getItem(prediction);
-      return item;
-      // const isItem = isAnItem(item);
+  // const isPrediction = isDetected(prediction);
+  // const isItem = isAnItem(item);
 
-    //   if (!isContinuousScan) {
-    //     if (isPrediction) {
-    //       // renderObjectDetection(item);
-    //       return item;
-    //     // } else {
-    //     //   scanIteration++;
-    //     //   if (scanIteration < maxScanAttempts) {
-    //     //     scan();
-    //     //   } else {
-    //     //     renderObjectDetection(null);
-    //     //   }
-    //     }
-    //   } else {
-    //     if (doCollectUnknown && isPrediction && !isItem) {
-    //       unknownItems.add(item?.prediction);
-    //       reportButtonEl.className = 'show';
-    //     }
-    //     renderItem(item, itemEl, priceEl);
-    //     scan();
-    //   }
-    // });
+  // if (!isContinuousScan) {
+  //   if (isPrediction) {
+  //     // renderObjectDetection(item);
+  //     return item;
+  //   // } else {
+  //   //   scanIteration++;
+  //   //   if (scanIteration < maxScanAttempts) {
+  //   //     scan();
+  //   //   } else {
+  //   //     renderObjectDetection(null);
+  //   //   }
+  //   }
+  // } else {
+  //   if (doCollectUnknown && isPrediction && !isItem) {
+  //     unknownItems.add(item?.prediction);
+  //     reportButtonEl.className = 'show';
+  //   }
+  //   renderItem(item, itemEl, priceEl);
+  //   scan();
+  // }
 };
 
 const runCharacterDetection = async () => {
-  console.log('SHS runCharacterDetection'); // @debug
+  if (false && !!doDebug) { console.log('SHS runCharacterDetection'); } // @debug
   const c = document.createElement('canvas');
   c.width = 640;
   c.height = 360;
   c.getContext('2d').drawImage(video, 0, 0, 640, 360);
   const { data: { text } } = await scheduler.addJob('recognize', c);
-  const item = getItemFuzzy(text);
-  return item;
-  const isItem = isAnItem(item);
-  if (isItem) {
-    return item;
-    // renderDetection(item);
-  } else {
-    // await runCharacterDetection();
-  }
+  return getItemFuzzy(text);
 };
 
 const loadCharacterDetection = async () => {
@@ -125,13 +115,12 @@ const detectFrame = () => {
     detectionPromises.push(runCharacterDetection());
   }
 
-  console.log('SHS detectionPromises:', detectionPromises); // @debug
   Promise.allSettled([...detectionPromises])
     .then((values) => {
-      console.log('SHS values:', values); // @debug
+      if (true && !!doDebug) { console.log('SHS values:', values.map(v => v?.value?.name)); } // @debug
       const items = values.filter(({ value: item }) => isAnItem(item) ? item : false);
       if (items.length) {
-        renderDetection(items[0].value);
+        renderDetection(items[items.length - 1].value);
       } else {
         detectFrame();
       }
