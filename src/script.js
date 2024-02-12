@@ -7,7 +7,6 @@ import {
   getItem,
   getItemFuzzy,
   isAnItem,
-  isDetected,
   renderItem,
 } from './item.js';
 
@@ -15,7 +14,6 @@ const {
   itemEl,
   noFeedErrorEl,
   priceEl,
-  reportButtonEl,
   rescanButtonEl,
   videoEl,
 } = getDomElements();
@@ -27,16 +25,8 @@ const OBJECT_DETECTION = 'od';
 // specify algorithm(s) ordered by preference
 let detectionAlgorithms = [OPTICAL_CHARACTER_RECOGNITION, OBJECT_DETECTION];
 
-// config
-const urlParams = new URLSearchParams(window.location.search);
-const maxScanAttempts = urlParams.get('max') ?? 100;
-const doCollectUnknown = urlParams.get('collect') ?? false;
-const isContinuousScan = urlParams.get('continuous') ?? doCollectUnknown;
-
 let isScanning = true;
-let scanIteration = 0;
 let objectDetectionModel = null;
-let unknownItems = new Set([]);
 
 const { createWorker, createScheduler } = Tesseract;
 const scheduler = createScheduler();
@@ -48,44 +38,13 @@ const renderDetection = (item) => {
   beep();
 };
 
-const renderObjectDetection = (item) => {
-  scanIteration = 0;
-  renderDetection(item);
-};
-
 const runObjectDetection = async () => {
-  if (false && !!doDebug) { console.log('SHS runObjectDetection'); } // @debug
   const predictions = await objectDetectionModel.detect(videoEl);
   const prediction = extractPrediction(predictions);
   return getItem(prediction);
-
-  // const isPrediction = isDetected(prediction);
-  // const isItem = isAnItem(item);
-
-  // if (!isContinuousScan) {
-  //   if (isPrediction) {
-  //     // renderObjectDetection(item);
-  //     return item;
-  //   // } else {
-  //   //   scanIteration++;
-  //   //   if (scanIteration < maxScanAttempts) {
-  //   //     scan();
-  //   //   } else {
-  //   //     renderObjectDetection(null);
-  //   //   }
-  //   }
-  // } else {
-  //   if (doCollectUnknown && isPrediction && !isItem) {
-  //     unknownItems.add(item?.prediction);
-  //     reportButtonEl.className = 'show';
-  //   }
-  //   renderItem(item, itemEl, priceEl);
-  //   scan();
-  // }
 };
 
 const runCharacterDetection = async () => {
-  if (false && !!doDebug) { console.log('SHS runCharacterDetection'); } // @debug
   const c = document.createElement('canvas');
   c.width = 640;
   c.height = 360;
@@ -149,15 +108,6 @@ const rescan = () => {
   scan();
 };
 
-const report = () => {
-  isScanning = false;
-  reportButtonEl.className = 'hide';
-  const itemsReport = Array.from(unknownItems);
-  itemEl.innerHTML = itemsReport.join(', ');
-  itemEl.className = 'small';
-  rescanButtonEl.className = 'show';
-};
-
 const getMedia = async (constraints) => {
   if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
     const webCamPromise = navigator.mediaDevices
@@ -202,4 +152,3 @@ navigator.permissions.query({ name: 'camera' })
 
 // register events
 rescanButtonEl.addEventListener ('click', rescan);
-reportButtonEl.addEventListener ('click', report);
