@@ -1,5 +1,3 @@
-const doDebug = true;                                               // @debug
-
 import { beep } from './beep.js';
 import { getDomElements } from './dom.js';
 import {
@@ -83,7 +81,6 @@ const detectFrame = () => {
 
   Promise.allSettled([...detectionPromises])
     .then((values) => {
-      if (true && !!doDebug) { console.log('SHS values:', values.map(v => v?.value?.name)); } // @debug
       const items = values.filter(({ value: item }) => isAnItem(item) ? item : false);
       if (items.length) {
         renderDetection(items[0].value);
