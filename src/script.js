@@ -24,10 +24,10 @@ const {
 const OPTICAL_CHARACTER_RECOGNITION = 'ocr';
 const OBJECT_DETECTION = 'od';
 
+// specify algorithm(s) ordered by preference
+let detectionAlgorithms = [OPTICAL_CHARACTER_RECOGNITION, OBJECT_DETECTION];
+
 // config
-// let detectionAlgorithms = [OPTICAL_CHARACTER_RECOGNITION];
-// let detectionAlgorithms = [OBJECT_DETECTION]; // @todo: remove me
-let detectionAlgorithms = [OBJECT_DETECTION, OPTICAL_CHARACTER_RECOGNITION]; // @todo: remove me
 const urlParams = new URLSearchParams(window.location.search);
 const maxScanAttempts = urlParams.get('max') ?? 100;
 const doCollectUnknown = urlParams.get('collect') ?? false;
@@ -35,7 +35,7 @@ const isContinuousScan = urlParams.get('continuous') ?? doCollectUnknown;
 
 let isScanning = true;
 let scanIteration = 0;
-let model = null;
+let objectDetectionModel = null;
 let unknownItems = new Set([]);
 
 const { createWorker, createScheduler } = Tesseract;
@@ -55,7 +55,7 @@ const renderObjectDetection = (item) => {
 
 const runObjectDetection = async () => {
   if (false && !!doDebug) { console.log('SHS runObjectDetection'); } // @debug
-  const predictions = await model.detect(videoEl);
+  const predictions = await objectDetectionModel.detect(videoEl);
   const prediction = extractPrediction(predictions);
   return getItem(prediction);
 
@@ -104,15 +104,22 @@ const loadCharacterDetection = async () => {
   }
 };
 
+const DETECTION_ALGORITHM_MAP = {
+  ocr: runCharacterDetection,
+  od: runObjectDetection,
+};
+
+const DETECTION_MODEL_MAP = {
+  ocr: loadCharacterDetection,
+  od: cocoSsd.load,
+};
+
 const detectFrame = () => {
   if (!isScanning) return;
 
   let detectionPromises = [];
-  if (detectionAlgorithms.includes(OBJECT_DETECTION)) {
-    detectionPromises.push(runObjectDetection());
-  }
-  if (detectionAlgorithms.includes(OPTICAL_CHARACTER_RECOGNITION)) {
-    detectionPromises.push(runCharacterDetection());
+  for (const algorithmName of detectionAlgorithms) {
+    detectionPromises.push(DETECTION_ALGORITHM_MAP[algorithmName]());
   }
 
   Promise.allSettled([...detectionPromises])
@@ -120,7 +127,7 @@ const detectFrame = () => {
       if (true && !!doDebug) { console.log('SHS values:', values.map(v => v?.value?.name)); } // @debug
       const items = values.filter(({ value: item }) => isAnItem(item) ? item : false);
       if (items.length) {
-        renderDetection(items[items.length - 1].value);
+        renderDetection(items[0].value);
       } else {
         detectFrame();
       }
@@ -166,16 +173,15 @@ const getMedia = async (constraints) => {
       });
 
     let modelPromises = [];
-    if (detectionAlgorithms.includes(OBJECT_DETECTION)) {
-      modelPromises.push(cocoSsd.load());
-    }
-    if (detectionAlgorithms.includes(OPTICAL_CHARACTER_RECOGNITION)) {
-      modelPromises.push(loadCharacterDetection());
+    for (const algorithmName of detectionAlgorithms) {
+      modelPromises.push(DETECTION_MODEL_MAP[algorithmName]());
     }
 
-    Promise.all([...modelPromises, webCamPromise])
+    Promise.allSettled([...modelPromises, webCamPromise])
       .then((values) => {
-        model = values[0];
+        if (detectionAlgorithms.includes(OBJECT_DETECTION)) {
+          objectDetectionModel = values[detectionAlgorithms.indexOf(OBJECT_DETECTION)]?.value;
+        }
         detectFrame();
       })
       .catch((error) => {
