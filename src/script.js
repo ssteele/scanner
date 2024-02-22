@@ -61,15 +61,13 @@ const loadCharacterDetection = async () => {
   }
 };
 
-const DETECTION_ALGORITHM_MAP = {
-  ocr: runCharacterDetection,
-  od: runObjectDetection,
-};
+const DETECTION_ALGORITHM_MAP = {};
+DETECTION_ALGORITHM_MAP[OPTICAL_CHARACTER_RECOGNITION] = runCharacterDetection;
+DETECTION_ALGORITHM_MAP[OBJECT_DETECTION] = runObjectDetection;
 
-const DETECTION_MODEL_MAP = {
-  ocr: loadCharacterDetection,
-  od: cocoSsd.load,
-};
+const DETECTION_MODEL_MAP = {};
+DETECTION_MODEL_MAP[OPTICAL_CHARACTER_RECOGNITION] = loadCharacterDetection;
+DETECTION_MODEL_MAP[OBJECT_DETECTION] = cocoSsd.load;
 
 const detectFrame = () => {
   if (!isScanning) return;
